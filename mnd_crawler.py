@@ -7,11 +7,25 @@ Original file is located at
     https://colab.research.google.com/drive/1lhNZt1SQSxr7TwyDLd_xLSl4YUx2GGrs
 """
 
+import re
+
 def extract_metrics(text):
+    # 共機偵測總數（例：計 23 架次、共 19 架次）
+    m_air = re.search(r"(共|計)\s*(\d+)\s*架次", text)
+    aircraft_total = int(m_air.group(2)) if m_air else None
+
+    # 進入 ADIZ 架次（例：其中 11 架次 進入我西南空域 / 進入 ADIZ）
+    m_adiz = re.search(r"其中\s*(\d+)\s*架次.*?(ADIZ|空域|中線)", text)
+    adiz_count = int(m_adiz.group(1)) if m_adiz else None
+
+    # 共艦活動數量（例：另有 7 艘共艦 / 計 5 艦）
+    m_ship = re.search(r"(共|計)\s*(\d+)\s*艦", text)
+    ship_count = int(m_ship.group(2)) if m_ship else None
+
     return {
-        "偵測到的共機總數": None,
-        "進入ADIZ或跨越中線": None,
-        "偵測到的共艦數量": None
+        "偵測到的共機總數": aircraft_total,
+        "進入ADIZ或跨越中線": adiz_count,
+        "共艦活動數量": ship_count,
     }
 
 # -*- coding: utf-8 -*-
